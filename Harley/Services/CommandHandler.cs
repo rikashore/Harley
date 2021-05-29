@@ -29,7 +29,9 @@ namespace Harley.Services
         {
             _client.MessageReceived += OnMessageReceived;
             _client.InteractionCreated += OnInteractionCreated;
+            
             _service.CommandExecuted += OnCommandExecuted;
+            
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
         }
 
@@ -38,15 +40,21 @@ namespace Harley.Services
             if (arg.Type == InteractionType.MessageComponent)
             {
                 var parsedArg = (SocketMessageComponent)arg;
-                // respond with the update message response type. This edits the original message if you have set AlwaysAcknowledgeInteractions to false.
-                await parsedArg.RespondAsync($"Clicked {parsedArg.Data.CustomId}!", type: InteractionResponseType.UpdateMessage);
+                switch (parsedArg.Data.CustomId)
+                {
+                    case "custom_success_button":
+                        await parsedArg.RespondAsync("You pressed the right button!", type: InteractionResponseType.UpdateMessage);
+                        break;
+                    case "custom_danger_button":
+                        await parsedArg.RespondAsync("Oh no! You pressed the wrong button", type: InteractionResponseType.UpdateMessage);
+                        break;
+                }
             }
         }
 
         private async Task OnMessageReceived(SocketMessage arg)
         {
-            if (!(arg is SocketUserMessage message)) return;
-            if (message.Source != MessageSource.User) return;
+            if (arg is not SocketUserMessage {Source: MessageSource.User} message) return;
 
             var argPos = 0;
             if (!message.HasStringPrefix(_config["discord:prefix"], ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos)) return;

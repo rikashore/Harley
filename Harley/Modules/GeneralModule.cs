@@ -15,7 +15,7 @@ namespace Harley.Modules
         [Command("url-button")]
         public async Task UrlButtonAsync()
         {
-            var builder = new ComponentBuilder().WithButton("Hello!", ButtonStyle.Link, emote: null,
+            var builder = new ComponentBuilder().WithButton("Hello!", customId: null, ButtonStyle.Link, emote: null,
                 url: "https://github.com/shift-eleven/Alexandra", disabled: false, row: 0);
 
             await Context.Channel.SendMessageAsync("Buttons!", component: builder.Build());
@@ -24,13 +24,34 @@ namespace Harley.Modules
         [Command("simple-button")]
         public async Task SimpleButtonAsync()
         {
-            var builder = new ComponentBuilder().WithButton("Hello!", ButtonStyle.Primary, customId: "id_1");
+            var builder = new ComponentBuilder().WithButton("Hello!","id_1", ButtonStyle.Primary);
             await Context.Channel.SendMessageAsync("Test buttons!", component: builder.Build());
+        }
+        
+        // We handle these buttons in our event in the command handler
+        [Command("custom-id")]
+        public async Task CustomButtonResponseAsync()
+        {
+            var successButton = new ButtonBuilder()
+                .WithLabel("Press this")
+                .WithStyle(ButtonStyle.Success)
+                .WithCustomId("custom_success_button");
+            
+            var dangerButton = new ButtonBuilder()
+                .WithLabel("Don't press this")
+                .WithStyle(ButtonStyle.Danger)
+                .WithCustomId("custom_danger_button");
+
+            var component = new ComponentBuilder()
+                .WithButton(successButton)
+                .WithButton(dangerButton)
+                .Build();
+
+            await Context.Channel.SendMessageAsync("Press the right button", component: component);
         }
 
         
         // Weird feeling rows are bugged, but the buttons work as intended
-        // TODO: Show usage of custom_ids later in event
         [Command("multi-button")]
         public async Task MultiButtonAsync()
         {
