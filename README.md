@@ -33,4 +33,7 @@ Harley has a few dependencies which are required to run (and some that are not)
 - [Discord.Addons.Hosting](https://github.com/Hawxy/Discord.Addons.Hosting) - This allows me to use the host builder to configure the discord bot  
     Without this the way you create and run your discord bot will be different, an example of how to do this can be found [here](https://docs.stillu.cc/guides/getting_started/first-bot.html) 
   
-- Serilog - Serilog allows for customised logging but is not a requirement
+- Serilog - Serilog allows for customised logging but is not a requirement  
+
+## Slash Commands?  
+Slash commands are currently not present in Harley but I plan on adding them once they are in a more stable position
