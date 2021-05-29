@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Harley
 {
@@ -17,6 +20,14 @@ namespace Harley
     {
         static async Task Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                .WriteTo.Console(
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
+                    theme: SystemConsoleTheme.Grayscale)
+                .CreateLogger();
+            
             var host = new HostBuilder()
                 .ConfigureAppConfiguration(x =>
                 {
@@ -27,11 +38,7 @@ namespace Harley
 
                     x.AddConfiguration(configuration);
                 })
-                .ConfigureLogging(x =>
-                {
-                    x.AddConsole()
-                        .SetMinimumLevel(LogLevel.Debug);
-                })
+                .UseSerilog()
                 .ConfigureDiscordHost<DiscordSocketClient>((context, config) =>
                 {
                     config.SocketConfig = new DiscordSocketConfig
