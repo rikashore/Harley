@@ -15,8 +15,8 @@ namespace Harley.Modules
         [Command("url-button")]
         public async Task UrlButtonAsync()
         {
-            var builder = new ComponentBuilder().WithButton("Hello!", customId: null, ButtonStyle.Link, emote: null,
-                url: "https://github.com/shift-eleven/Alexandra", disabled: false, row: 0);
+            var builder = new ComponentBuilder().WithButton("This button takes you to my source code!", customId: null, ButtonStyle.Link, emote: null,
+                url: "https://github.com/shift-eleven/Harley", disabled: false, row: 0);
 
             await Context.Channel.SendMessageAsync("Buttons!", component: builder.Build());
         }
@@ -51,7 +51,7 @@ namespace Harley.Modules
         }
 
         
-        // Weird feeling rows are bugged, but the buttons work as intended
+        // Weird feeling rows are bugged (or the rows work not how I expect them to), but the buttons work as intended
         [Command("multi-button")]
         public async Task MultiButtonAsync()
         {
