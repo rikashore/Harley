@@ -2,7 +2,7 @@
 using Discord;
 using Discord.Commands;
 
-namespace Harley.Modules
+namespace Harley.Modules.Commands
 {
     public class GeneralModule : ModuleBase<SocketCommandContext>
     {
