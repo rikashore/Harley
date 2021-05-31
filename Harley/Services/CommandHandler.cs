@@ -52,14 +52,24 @@ namespace Harley.Services
             if (arg.Type == InteractionType.MessageComponent)
             {
                 var componentArg = (SocketMessageComponent) arg;
-                
-                var playerChoice = componentArg.Data.CustomId switch
+
+                string playerChoice;
+
+                switch (componentArg.Data.CustomId)
                 {
-                    "rock_button" => "rock",
-                    "paper_button" => "paper",
-                    "scissor_button" => "scissors",
-                    _ => ""
-                };
+                    case "rock_button":
+                        playerChoice = "rock";
+                        break;
+                    case "paper_button":
+                        playerChoice = "paper";
+                        break;
+                    case "scissor_button":
+                        playerChoice = "scissor";
+                        break;
+                    default:
+                        return;
+                }
+                
                 var computerChoice = _rpsService.GetChoice();
                 var winner = _rpsService.GetWinner(playerChoice, computerChoice);
                 
@@ -68,28 +78,30 @@ namespace Harley.Services
                     case 0:
                     {
                         await componentArg.RespondAsync("The computer wins!",
-                            type: InteractionResponseType.UpdateMessage);
+                            type: InteractionResponseType.ChannelMessageWithSource);
+                        
                         if (componentArg.Message is SocketUserMessage message)
-                            await message.ModifyAsync(x => x.Components = null);
+                            await message.ModifyAsync(x => x.Components = new ComponentBuilder().Build());
+                        
                         break;
                     }
                     case 1:
                     {
                         await componentArg.RespondAsync("You win!",
-                            type: InteractionResponseType.UpdateMessage);
+                            type: InteractionResponseType.ChannelMessageWithSource);
                         
                         if (componentArg.Message is SocketUserMessage message)
-                            await message.ModifyAsync(x => x.Components = null);
+                            await message.ModifyAsync(x => x.Components = new ComponentBuilder().Build());
                         
                         break;
                     }
                     case 2:
                     {
                         await componentArg.RespondAsync("A draw!",
-                            type: InteractionResponseType.UpdateMessage);
+                            type: InteractionResponseType.ChannelMessageWithSource);
                         
                         if (componentArg.Message is SocketUserMessage message)
-                            await message.ModifyAsync(x => x.Components = null);
+                            await message.ModifyAsync(x => x.Components = new ComponentBuilder().Build());
                         
                         break;
                     }
