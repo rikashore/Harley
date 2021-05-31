@@ -14,29 +14,87 @@ namespace Harley.Services
 {
     public class CommandHandler : InitializedService
     {
+        // Necessary stuff (config and discord related)
         private readonly IServiceProvider _provider;
         private readonly DiscordSocketClient _client;
         private readonly CommandService _service;
         private readonly IConfiguration _config;
+        
+        // Other stuff I want to inject
+        private readonly RpsService _rpsService;
 
-        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration config)
+        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration config, RpsService rpsService)
         {
             _provider = provider;
             _client = client;
             _service = service;
             _config = config;
+            _rpsService = rpsService;
         }
 
         public override async Task InitializeAsync(CancellationToken cancellationToken)
         {
             _client.MessageReceived += OnMessageReceived;
             
+            // Keeping single responsibility pattern by hooking the event multiple times
             _client.InteractionCreated += BaseInteractionHandler;
             _client.InteractionCreated += InfoInteractionHandler;
+            _client.InteractionCreated += RpsInteractionHandler;
             
             _service.CommandExecuted += OnCommandExecuted;
             
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
+        }
+
+        // TODO Figure out proper modifying of original message
+        private async Task RpsInteractionHandler(SocketInteraction arg)
+        {
+            if (arg.Type == InteractionType.MessageComponent)
+            {
+                var componentArg = (SocketMessageComponent) arg;
+                
+                var playerChoice = componentArg.Data.CustomId switch
+                {
+                    "rock_button" => "rock",
+                    "paper_button" => "paper",
+                    "scissor_button" => "scissors",
+                    _ => ""
+                };
+                var computerChoice = _rpsService.GetChoice();
+                var winner = _rpsService.GetWinner(playerChoice, computerChoice);
+                
+                switch (winner)
+                {
+                    case 0:
+                    {
+                        await componentArg.RespondAsync("The computer wins!",
+                            type: InteractionResponseType.UpdateMessage);
+                        if (componentArg.Message is SocketUserMessage message)
+                            await message.ModifyAsync(x => x.Components = null);
+                        break;
+                    }
+                    case 1:
+                    {
+                        await componentArg.RespondAsync("You win!",
+                            type: InteractionResponseType.UpdateMessage);
+                        
+                        if (componentArg.Message is SocketUserMessage message)
+                            await message.ModifyAsync(x => x.Components = null);
+                        
+                        break;
+                    }
+                    case 2:
+                    {
+                        await componentArg.RespondAsync("A draw!",
+                            type: InteractionResponseType.UpdateMessage);
+                        
+                        if (componentArg.Message is SocketUserMessage message)
+                            await message.ModifyAsync(x => x.Components = null);
+                        
+                        break;
+                    }
+                }
+            }
         }
 
         private async Task InfoInteractionHandler(SocketInteraction arg)
@@ -44,23 +102,28 @@ namespace Harley.Services
             if (arg.Type == InteractionType.MessageComponent)
             {
                 var componentArg = (SocketMessageComponent) arg;
-                if (componentArg.Data.CustomId == "main_info" && componentArg.Message.Embeds.First() == InfoEmbeds.MainInfoEmbed)
-                    return;
-                if (componentArg.Data.CustomId == "why_name" && componentArg.Message.Embeds.First() == InfoEmbeds.NameInfoEmbed)
-                    return;
-                
                 switch (componentArg.Data.CustomId)
                 {
-                    case "main_info":
+                    case "main_info" when componentArg.Message.Embeds.First() == InfoEmbeds.MainInfoEmbed:
+                    case "why_name" when componentArg.Message.Embeds.First() == InfoEmbeds.NameInfoEmbed:
+                        return;
+                    default:
                     {
-                        if (componentArg.Message is IUserMessage message)
-                            await message.ModifyAsync(x => x.Embed = InfoEmbeds.MainInfoEmbed);
-                        break;
-                    }
-                    case "why_name":
-                    {
-                        if (componentArg.Message is IUserMessage message)
-                            await message.ModifyAsync(x => x.Embed = InfoEmbeds.NameInfoEmbed);
+                        switch (componentArg.Data.CustomId)
+                        {
+                            case "main_info":
+                            {
+                                if (componentArg.Message is IUserMessage message)
+                                    await message.ModifyAsync(x => x.Embed = InfoEmbeds.MainInfoEmbed);
+                                break;
+                            }
+                            case "why_name":
+                            {
+                                if (componentArg.Message is IUserMessage message)
+                                    await message.ModifyAsync(x => x.Embed = InfoEmbeds.NameInfoEmbed);
+                                break;
+                            }
+                        }
                         break;
                     }
                 }
