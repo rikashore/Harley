@@ -47,6 +47,7 @@ namespace Harley
                         LogLevel = LogSeverity.Verbose,
                         AlwaysDownloadUsers = true,
                         MessageCacheSize = 200,
+                        AlwaysAcknowledgeInteractions = false
                     };
 
                     config.Token = context.Configuration["discord:token"];
