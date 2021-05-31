@@ -5,6 +5,7 @@ using Discord;
 using Discord.Addons.Hosting;
 using Discord.Commands;
 using Discord.WebSocket;
+using Harley.Common.Extensions;
 using Harley.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +59,10 @@ namespace Harley
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddHostedService<CommandHandler>();
+                    services
+                        .AddHostedService<CommandHandler>()
+                        .AddSingleton<Random>()
+                        .AddHarleyServices();
                 })
                 .UseConsoleLifetime()
                 .Build();
