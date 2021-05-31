@@ -1,13 +1,16 @@
 # Harley
 Harley is a simple discord bot built upon [Discord.Net-Labs](https://github.com/Discord-Net-Labs/Discord.Net-Labs)  
 
-## The basics  
+# The basics  
 Handling interactions is done through hooking the `InteractionCreated` event on a discord client and appropriately creating a task that takes a `SocketInteraction` as an argument 
 
 An example can be found [here](https://github.com/Discord-Net-Labs/Discord.Net-Labs/tree/Interactions#message-components)  
 
-## The commands  
+# The commands  
 The commands for Harley are made upon the built-in commands framework and show how to create and send simple components  
+
+## General Commands  
+Some general purpose commands to showcase buttons
 
 ### url-button  
 This command displays a simple URL button  
@@ -21,6 +24,17 @@ This command showcases how you can handle interactions with buttons that have cu
 ### multi-button  
 Showcases all the styles of buttons and displays them in different rows  
 
+## Info  
+Showcase info about the bot  
+
+### info  
+Uses buttons to showcase various pieces of info relating to Harley  
+
+## Fun  
+Few fun and miscellaneous commands  
+
+### rps  
+Play Rock Paper Scissors through buttons!
 
 ## Running the Bot  
 Harley has a few dependencies which are required to run (and some that are not)  
@@ -36,4 +50,4 @@ Harley has a few dependencies which are required to run (and some that are not)
 - Serilog - Serilog allows for customised logging but is not a requirement  
 
 ## Slash Commands?  
-Slash commands are currently not present in Harley but I plan on adding them once they are in a more stable position
+Slash commands are gonna be added soon! I plan on adding a few slash commands to showcase their abilities.
